@@ -30,7 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$users = $pdo->query('SELECT id, username, created_at FROM users ORDER BY username')->fetchAll(PDO::FETCH_ASSOC);
+$check = $pdo->query("SHOW COLUMNS FROM users LIKE 'created_at'");
+$hasCreated = $check && $check->fetch();
+if ($hasCreated) {
+    $users = $pdo->query('SELECT id, username, created_at FROM users ORDER BY username')->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $users = $pdo->query('SELECT id, username FROM users ORDER BY username')->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($users as &$u) {
+        $u['created_at'] = '';
+    }
+}
 
 $active = 'users';
 include __DIR__.'/header.php';
@@ -58,7 +67,9 @@ include __DIR__.'/header.php';
                     <thead>
                     <tr>
                         <th>Username</th>
-                        <th>Created</th>
+                        <?php if ($hasCreated): ?>
+                            <th>Created</th>
+                        <?php endif; ?>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -66,7 +77,9 @@ include __DIR__.'/header.php';
                     <?php foreach ($users as $u): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($u['username']); ?></td>
-                            <td><?php echo htmlspecialchars($u['created_at']); ?></td>
+                            <?php if ($hasCreated): ?>
+                                <td><?php echo htmlspecialchars($u['created_at']); ?></td>
+                            <?php endif; ?>
                             <td>
                                 <form method="post" class="d-inline">
                                     <input type="hidden" name="id" value="<?php echo $u['id']; ?>">
