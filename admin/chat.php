@@ -1034,6 +1034,7 @@ include __DIR__.'/header.php';
         </div>
     </div>
 
+    <?php $last_id = !empty($messages) ? end($messages)['id'] : null; ?>
     <script src="../assets/js/emoji-picker.js"></script>
     <script>
         // Auto-resize textarea
@@ -1045,6 +1046,8 @@ include __DIR__.'/header.php';
         const emojiBtn = document.getElementById('emojiBtn');
         const emojiPicker = document.getElementById('emojiPicker');
         const messagesContainer = document.getElementById('messagesContainer');
+
+        let lastMessageId = <?php echo $last_id !== null ? (int)$last_id : 'null'; ?>;
 
         sendButton.disabled = messageInput.value.trim() === '' && !fileInput.files.length;
 
@@ -1145,6 +1148,13 @@ include __DIR__.'/header.php';
             fetch(`chat.php?store_id=${storeId}&load=1`)
                 .then(r => r.json())
                 .then(data => {
+                    if (!data.length) return;
+                    const newLastId = data[data.length - 1].id;
+                    if (newLastId === lastMessageId && data.length === messagesContainer.children.length) {
+                        return;
+                    }
+                    lastMessageId = newLastId;
+
                     const prevScroll = messagesContainer.scrollTop;
                     const prevHeight = messagesContainer.scrollHeight;
                     const atBottom = prevHeight - prevScroll - messagesContainer.clientHeight < 50;
