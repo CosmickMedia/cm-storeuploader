@@ -270,7 +270,7 @@ include __DIR__.'/header.php';
                                     <?php foreach ($recent_uploads as $upload): ?>
                                         <tr>
                                             <td>
-                                                <?php $thumb = !empty($upload['thumb_path']) ? '/' . ltrim($upload['thumb_path'], '/') : 'thumbnail.php?id=' . $upload['id'] . '&size=small'; ?>
+                                                <?php $thumb = !empty($upload['thumb_path']) ? '/public/' . ltrim($upload['thumb_path'], '/') : 'thumbnail.php?id=' . $upload['id'] . '&size=small'; ?>
                                                 <img src="<?php echo htmlspecialchars($thumb); ?>"
                                                      class="preview-img-sm"
                                                      alt="<?php echo htmlspecialchars($upload['filename']); ?>"
